@@ -75,6 +75,6 @@ El texto debe coincidir exactamente con el título que Shortcuts encuentra en Bo
 
 ## Código y límites de prueba
 
-`index.html` valida el identificador, construye el enlace de Shortcuts mediante `URLSearchParams` y muestra un enlace manual de respaldo. Sin parámetro usa el Shortcut fijo. El cambio se guardó en GitHub con el commit `2b152b1`.
+`index.html` valida el identificador, codifica el nombre del Shortcut con `%20` y el libro con `encodeURIComponent`, y muestra un enlace manual de respaldo. Sin parámetro usa el Shortcut fijo. La prueba inicial mostró que Shortcuts interpretaba como literales los `+` de `URLSearchParams` en el nombre; se corrigió a `%20` en el commit `5378003`.
 
 Se verificó en el editor de GitHub el contenido guardado y el patrón del código. La ejecución del JavaScript en Pages, su despliegue tras el commit y la ruta al Shortcut general todavía requieren comprobación real en el Mac; el Shortcut general aún no está creado. No describir la generalización como validada hasta completar esa prueba extremo a extremo. La URL scheme es conforme con la guía de Apple enlazada arriba.
