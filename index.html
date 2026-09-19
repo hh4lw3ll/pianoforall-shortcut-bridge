@@ -39,12 +39,7 @@
         // Sólo acepta identificadores de libros con el formato previsto.
         title.textContent = "Abriendo PianoForAll — " + book + "…";
         link.textContent = "Abrir " + book;
-        const shortcut = new URLSearchParams({
-          name: "PianoForAll — Open Book",
-          input: "text",
-          text: book
-        });
-        target = "shortcuts://run-shortcut?" + shortcut.toString();
+        target = "shortcuts://run-shortcut?name=PianoForAll%20%E2%80%94%20Open%20Book&input=text&text=" + encodeURIComponent(book);
       } else {
         title.textContent = "Parámetro de libro no válido";
         message.textContent = "Usa el formato Bk1-Pt1, por ejemplo.";
