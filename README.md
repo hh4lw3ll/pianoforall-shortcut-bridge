@@ -16,7 +16,7 @@ El parámetro `book` acepta el patrón `BkN-PtN`, por ejemplo `Bk1-Pt2` o `Bk2-P
 
 Las pruebas reales en Notion mostraron que un enlace normal, la acción `Open page or URL` de un Button y un enlace creado con la fórmula `link()` no ejecutaban directamente el esquema `shortcuts://`. La URL web HTTPS sí fue aceptada por el botón. GitHub Pages sirve esta página como HTTPS; el JavaScript del puente solicita después a macOS abrir Shortcuts.
 
-Esto no elimina los avisos o confirmaciones que Safari/macOS puedan presentar. Que la página esté publicada no demuestra por sí solo la ejecución local: la prueba final requiere abrir el enlace en Safari en el Mac y comprobar el libro en Books.
+Safari o macOS pueden mostrar una confirmación al abrir Shortcuts. El recorrido parametrizado se probó en Safari en el Mac y el usuario confirmó que Books mostró el libro solicitado.
 
 ## Shortcut fijo validado como fallback
 
@@ -32,25 +32,21 @@ El esquema que el puente fijo ejecuta es:
 
 `shortcuts://run-shortcut?name=PianoForAll%20%E2%80%94%20Bk1-Pt1`
 
-El usuario validó el recorrido completo: Notion → botón `📖 Open in Books` → GitHub Pages → Shortcut fijo → Apple Books → `Bk1-Pt1`. Mantener este atajo como fallback hasta probar el general en el Mac.
+El usuario validó el recorrido fijo completo: Notion → botón `📖 Open in Books` → GitHub Pages → Shortcut fijo → Apple Books → `Bk1-Pt1`. El atajo fijo se conserva como fallback; la URL de Pages sin parámetro sigue llamándolo.
 
-## Crear el Shortcut general en macOS
+## Shortcut general en macOS
 
-Shortcuts debe recibir texto como `Shortcut Input`. Duplicar el atajo fijo o crear uno nuevo llamado exactamente `PianoForAll — Open Book`; no renombrar ni borrar el atajo fijo.
-
-Configurar sus acciones así:
+Se duplicó el atajo fijo y se renombró la copia `PianoForAll — Open Book`. El atajo original se conservó intacto. El general recibe texto como `Shortcut Input` y ejecuta estas acciones:
 
 1. `Find Books`, filtro `Title is Shortcut Input` (la variable de entrada de texto recibida por el atajo).
 2. `Limit`: activar el límite y poner `1`.
-3. `Open Specific Book` usando el resultado `Book` de Find Books.
+3. `Open Specific Book` usando el resultado `Book` de `Find Books`.
 
-Guardar el atajo. Antes de conectarlo a Notion, probar en Shortcuts pasando `Bk1-Pt1` como entrada y confirmar que Books abre ese libro. Si la búsqueda no encuentra una coincidencia, revisar que el título de Books sea idéntico.
-
-Cuando esté creado, probar desde Safari esta URL:
+La prueba parametrizada en Safari confirmó que esta URL abre `Bk1-Pt1` en Apple Books:
 
 `https://hh4lw3ll.github.io/pianoforall-shortcut-bridge/?book=Bk1-Pt1`
 
-El esquema resultante esperado es equivalente a:
+El esquema que genera el puente es:
 
 `shortcuts://run-shortcut?name=PianoForAll%20%E2%80%94%20Open%20Book&input=text&text=Bk1-Pt1`
 
@@ -62,11 +58,11 @@ En la lección, dentro de `STUDY MATERIAL`, editar el botón `📖 Open in Books
 
 `https://hh4lw3ll.github.io/pianoforall-shortcut-bridge/?book=Bk1-Pt1`
 
-La URL anterior, sin `?book=`, sigue siendo el fallback al Shortcut fijo. En la prueba inicial, Notion aceptó esa URL HTTPS y el usuario confirmó que funcionó hasta Books. El botón puede requerir una URL distinta por lección, ya que esta implementación no deriva automáticamente el libro de una propiedad de Notion.
+La URL anterior, sin `?book=`, sigue siendo el fallback al Shortcut fijo. El botón `📖 Open in Books` ya se probó en Notion con la URL sin parámetro. Para usar el atajo general desde Notion, configurar la acción `Open` con la URL parametrizada correspondiente a esa lección. Cada botón requiere su valor `book`; esta implementación no lo deriva automáticamente de una propiedad de Notion.
 
 ## Añadir futuros libros
 
-Con `PianoForAll — Open Book` ya probado, para cada lección se puede reutilizar el mismo puente cambiando sólo el parámetro. Ejemplos:
+Para cada lección se reutiliza el mismo puente y Shortcut, cambiando sólo el parámetro. Ejemplos:
 
 - `.../?book=Bk1-Pt2`
 - `.../?book=Bk2-Pt1`
@@ -75,6 +71,6 @@ El texto debe coincidir exactamente con el título que Shortcuts encuentra en Bo
 
 ## Código y límites de prueba
 
-`index.html` valida el identificador, codifica el nombre del Shortcut con `%20` y el libro con `encodeURIComponent`, y muestra un enlace manual de respaldo. Sin parámetro usa el Shortcut fijo. La prueba inicial mostró que Shortcuts interpretaba como literales los `+` de `URLSearchParams` en el nombre; se corrigió a `%20` en el commit `5378003`.
+`index.html` valida el identificador, codifica el nombre del Shortcut con `%20` y el libro con `encodeURIComponent`, y muestra un enlace manual de respaldo. Sin parámetro usa el Shortcut fijo. La prueba inicial mostró que Shortcuts interpretaba literalmente los `+` que `URLSearchParams` usaba en el nombre; se corrigió a `%20` en el commit `5378003` y el despliegue de GitHub Pages terminó correctamente.
 
-Se verificó en el editor de GitHub el contenido guardado y el patrón del código. La ejecución del JavaScript en Pages, su despliegue tras el commit y la ruta al Shortcut general todavía requieren comprobación real en el Mac; el Shortcut general aún no está creado. No describir la generalización como validada hasta completar esa prueba extremo a extremo. La URL scheme es conforme con la guía de Apple enlazada arriba.
+Pruebas confirmadas: flujo fijo desde Notion hasta Books; URL parametrizada desde Safari hasta Books; formato de URL esperado y filtro `Shortcut Input` configurados. La ruta parametrizada desde el Button de Notion todavía requiere poner en ese Button la URL con `?book=` y probarla desde la lección. La guía de Apple enlazada arriba documenta `shortcuts://run-shortcut` y el texto de entrada.
